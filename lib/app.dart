@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class App extends StatefulWidget {
+  const App({super.key});
+
   @override
   _AppState createState() => _AppState();
 }
@@ -29,17 +31,19 @@ class _AppState extends State<App> {
 
 
       if (decodeJson.isNotEmpty) {
-        List<Widget> _columns = [];
-        decodeJson[0].forEach((key, value) => _columns.add(Text(key)));
+        List<Widget> columns = [];
+        decodeJson[0].forEach((key, value) => columns.add(Text(key)));
 
-        _rows.add(_columns);
+        _rows.add(columns);
         _rows = decodeJson.map((e) {
           List<Widget> a = [];
           e.forEach((key, value) => a.add(Text(value.toString())));
           return a;
         }).toList();
 
-        _rows.forEach((e) => tables.add(TableRow(children: e)));
+        for (var e in _rows) {
+          tables.add(TableRow(children: e));
+        }
       }
     } else {
       throw Exception('Failed to load books');
