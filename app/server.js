@@ -66,40 +66,49 @@ app.post('/api', (req, res) => {
 
 //Método PUT
 app.put('/api', (req, res) => {
-    DB.serialize(() => {
-        const sql = `
+    const sql = `
         UPDATE Pets
         SET tutor = ?, species = ?, race = ?, entry_date = ?, exit_date = ?
         WHERE id = ?
         `;
 
-        try {
-            const request_data = [
-                req.body.tutor, req.body.species, req.body.race, req.body.entry_date, req.body.exit_date, req.query.id,
-            ]
-            DB.run(sql, request_data, (err) => {
-                if (err) throw err;
+    try {
+        const request_data = [
+            req.body.tutor, req.body.species, req.body.race, req.body.entry_date, req.body.exit_date, req.query.id,
+        ]
+        DB.run(sql, request_data, (err) => {
+            if (err) throw err;
 
-                res.send(
-                    `Os dados de ${req.body.tutor}, dono de ${req.body.species}, foram atualizados`
-                );
-            });
-        } catch (err) {
-            res.status(500).send(err.message);
-        }
-    });
+            res.send(
+                `Os dados de ${req.body.tutor}, dono de ${req.body.species}, foram atualizados`
+            );
+        });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
 
 //MÉTODO DELETE
 app.delete('/api', (req, res) => {
-    const sql = 'DELETE FROM Pets WHERE id = ?';
-    try {
-        DB.run(sql, [req.query.id], function (err) {
-            if (err) throw err;
-            res.send(`O cliente ${req.body.tutor} e seu ${req.body.species} foram excluídos com sucesso.`);
-        });
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+    DB.serialize(() => {
+        const sql = 'DELETE FROM Pets WHERE id = ?';
+        const sql_before_delete = 'SELECT * FROM Pets WHERE id = ?';
+
+        try {
+            DB.all(sql_before_delete, [req.query.id], function (err, row) {
+                if (err) throw err;
+                const tutor = row[0]['tutor']
+                const species = row[0]['species']
+
+                DB.run(sql, [req.query.id], function (err) {
+                    if (err) throw err;
+
+                    res.send(`O cliente ${tutor} e seu ${species} foram excluídos com sucesso.`);
+                });
+            })
+        } catch (err) {
+            res.status(500).send(err.message);
+        }
+    })
 });
