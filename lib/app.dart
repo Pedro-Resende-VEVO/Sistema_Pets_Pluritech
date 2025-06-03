@@ -2,86 +2,113 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
+import 'package:teste/form_modal.dart';
+
 class App extends StatefulWidget {
+  const App({super.key});
+
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> {
-  List<TableRow> tables = [];
-  List<List<Widget>> _rows = [];
+  List<Map<String, dynamic>> data = [];
 
   @override
   void initState() {
-    super.initState();
     _fillTable();
-
+    super.initState();
   }
 
   Future<void> _fillTable() async {
-    final response = await http.get(Uri.parse('http://192.168.18.11:3000/api'));
+    http.Response response = await http.get(
+      Uri.parse('http://192.168.0.121:3000/api'),
+    );
+    final List<dynamic> decodeJson = jsonDecode(response.body);
+    List<Map<String, dynamic>> tempData = (decodeJson)
+        .map((item) => item as Map<String, dynamic>)
+        .toList();
+
+    tempData.forEach((element) {
+      element['edit_btn'] = ElevatedButton(
+        onPressed: () => {},
+        child: Icon(Icons.edit),
+      );
+
+      element['delete_btn'] = ElevatedButton(
+        onPressed: () => {deleteItem(element['id'])},
+        child: Icon(Icons.delete),
+      );
+    });
+
+    setState(() {
+      data = tempData;
+    });
+  }
+
+  void createItem(data) async {
+    http.Response response = await http.post(
+      Uri.parse('http://192.168.0.121:3000/api'),
+      body: data,
+    );
 
     if (response.statusCode == 200) {
-      final List<dynamic> decodeJson = jsonDecode(response.body);
-      final Iterable<dynamic> ids = decodeJson
-          .map((e) => e.remove('id'))
-          .toList();
+    }
+  }
 
+  void editItem(id) {}
 
-      if (decodeJson.isNotEmpty) {
-        List<Widget> _columns = [];
-        decodeJson[0].forEach((key, value) => _columns.add(Text(key)));
+  void deleteItem(id) async {
+    AlertDialog(title: Text('data'),);
 
-        _rows.add(_columns);
-        _rows = decodeJson.map((e) {
-          List<Widget> a = [];
-          e.forEach((key, value) => a.add(Text(value.toString())));
-          return a;
-        }).toList();
+    http.Response response = await http.delete(
+      Uri.parse('http://192.168.0.121:3000/api?id=' + id.toString()),
+    );
 
-        _rows.forEach((e) => tables.add(TableRow(children: e)));
-      }
-    } else {
-      throw Exception('Failed to load books');
+    if (response.statusCode == 200) {
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Books')),
-      body: Table(
-        border: TableBorder.all(),
-        columnWidths: const <int, TableColumnWidth>{
-          0: IntrinsicColumnWidth(),
-          1: FlexColumnWidth(),
-          2: FixedColumnWidth(64),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: tables
-        // children: <TableRow>[
-        //   TableRow(
-        //     children: <Widget>[
-        //       Text('col 1'),
-        //       Text('col 2'),
-        //       Text('col 3'),
-        //       Text('col 3'),
-        //       Text('col 3'),
-        //     ],
-        //   ),
-        // ],
+      appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          border: TableBorder.all(),
+          columns: const [
+            DataColumn(label: Text('')),
+            DataColumn(label: Text('')),
+            DataColumn(label: Text('Responsável')),
+            DataColumn(label: Text('Espécie')),
+            DataColumn(label: Text('Raça')),
+            DataColumn(label: Text('Data início')),
+            DataColumn(label: Text('Data Saída')),
+          ],
+          rows: data.map((item) {
+            return DataRow(
+              cells: [
+                DataCell(item['delete_btn']),
+                DataCell(item['edit_btn']),
+                DataCell(Text('${item['tutor']}')),
+                DataCell(Text('${item['species']}')),
+                DataCell(Text('${item['race']}')),
+                DataCell(Text('${item['entry_date']}')),
+                DataCell(Text('${item['exit_date']}')),
+              ],
+            );
+          }).toList(),
+        ),
       ),
-      // body: ListView.builder(
-      //   itemCount: _books.length,
-      //   itemBuilder: (BuildContext context, int index) {
-      //     return ListTile(
-      //       title: Text(_books[index].title),
-      //       subtitle: Text(_books[index].author),
-      //     );
-      //   },
-      // ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (ctx) =>
+                FormModal(titleText: 'Adcionar Cliente', func: createItem),
+          );
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), //
