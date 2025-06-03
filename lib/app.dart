@@ -27,7 +27,6 @@ class _AppState extends State<App> {
           .map((e) => e.remove('id'))
           .toList();
 
-      print(decodeJson);
 
       if (decodeJson.isNotEmpty) {
         List<Widget> _columns = [];
@@ -39,7 +38,6 @@ class _AppState extends State<App> {
           e.forEach((key, value) => a.add(Text(value.toString())));
           return a;
         }).toList();
-        print(_rows);
 
         _rows.forEach((e) => tables.add(TableRow(children: e)));
       }
