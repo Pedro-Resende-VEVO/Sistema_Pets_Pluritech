@@ -3,11 +3,5 @@
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "dependencies": {
-    "express": "^5.1.0",
-    "nodemon": "^3.1.10",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
-  },
   "type": "module"
 }

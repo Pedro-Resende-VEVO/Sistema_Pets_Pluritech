@@ -19,7 +19,7 @@ class _AppState extends State<App> {
   }
 
   Future<void> _fillTable() async {
-    final response = await http.get(Uri.parse('http://192.168.18.11:3000/api'));
+    final response = await http.get(Uri.parse('http://192.168.0.121:3000/api'));
 
     if (response.statusCode == 200) {
       final List<dynamic> decodeJson = jsonDecode(response.body);
