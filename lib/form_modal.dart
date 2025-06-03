@@ -4,8 +4,12 @@ class FormModal extends StatefulWidget {
   final String titleText;
   final Function func;
 
-  FormModal({Key? key, required this.titleText, required this.func})
-    : super(key: key);
+  const FormModal({
+    Key? key,
+    required this.titleText,
+    required this.func,
+    Map<String, dynamic>? data,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FormModalState();
@@ -13,21 +17,26 @@ class FormModal extends StatefulWidget {
 
 class _FormModalState extends State<FormModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final formData = {
+    'tutor': '',
+    'species': '',
+    'race': '',
+    'entry_date': '',
+    'exit_date': '',
+  };
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Form(
+    return AlertDialog(
+      title: Text(
+        widget.titleText,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+      content: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              widget.titleText,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-            const SizedBox(height: 5),
             TextFormField(
               decoration: const InputDecoration(hintText: 'Responsável'),
               validator: (String? value) {
@@ -36,6 +45,7 @@ class _FormModalState extends State<FormModal> {
                 }
                 return null;
               },
+              onSaved: (newValue) => formData['tutor'] = newValue.toString(),
             ),
             TextFormField(
               decoration: const InputDecoration(hintText: 'Espécie do Pet'),
@@ -45,6 +55,7 @@ class _FormModalState extends State<FormModal> {
                 }
                 return null;
               },
+              onSaved: (newValue) => formData['species'] = newValue.toString(),
             ),
             TextFormField(
               decoration: const InputDecoration(hintText: 'Raça'),
@@ -54,6 +65,7 @@ class _FormModalState extends State<FormModal> {
                 }
                 return null;
               },
+              onSaved: (newValue) => formData['race'] = newValue.toString(),
             ),
             TextFormField(
               decoration: const InputDecoration(hintText: 'Data de entrada'),
@@ -63,27 +75,33 @@ class _FormModalState extends State<FormModal> {
                 }
                 return null;
               },
+              onSaved: (newValue) => formData['entry_date'] = newValue.toString(),
             ),
             TextFormField(
               decoration: const InputDecoration(
                 hintText: 'Data de saída prevista',
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    widget.func();
-                  }
-                },
-                child: const Text('Enviar'),
-              ),
+              onSaved: (newValue) => formData['exit_date'] = newValue.toString(),
             ),
           ],
         ),
       ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              widget.func(formData);
+            }
+          },
+          child: const Text('Enviar'),
+        ),
+      ],
     );
   }
 }

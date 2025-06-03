@@ -49,7 +49,12 @@ class _AppState extends State<App> {
   void createItem(data) async {
     http.Response response = await http.post(
       Uri.parse('http://192.168.0.121:3000/api'),
+      body: data,
     );
+
+    if (response.statusCode == 200) {
+      print('deu');
+    }
   }
 
   void editItem(id) {}
@@ -88,7 +93,7 @@ class _AppState extends State<App> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalBottomSheet(
+          showDialog(
             context: context,
             builder: (ctx) =>
                 FormModal(titleText: 'Adcionar Cliente', func: createItem),
