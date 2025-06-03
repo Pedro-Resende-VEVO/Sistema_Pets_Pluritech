@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+var formData = {
+  'tutor': '',
+  'species': '',
+  'race': '',
+  'entry_date': '',
+  'exit_date': '',
+};
+
 class FormModal extends StatefulWidget {
   final String titleText;
   final Function func;
@@ -17,73 +25,71 @@ class FormModal extends StatefulWidget {
 
 class _FormModalState extends State<FormModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final formData = {
-    'tutor': '',
-    'species': '',
-    'race': '',
-    'entry_date': '',
-    'exit_date': '',
-  };
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+
     return AlertDialog(
       title: Text(
         widget.titleText,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
       ),
       content: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              decoration: const InputDecoration(hintText: 'Responsável'),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Favor inserir algum texto';
-                }
-                return null;
-              },
-              onSaved: (newValue) => formData['tutor'] = newValue.toString(),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(hintText: 'Espécie do Pet'),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Favor inserir algum texto';
-                }
-                return null;
-              },
-              onSaved: (newValue) => formData['species'] = newValue.toString(),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(hintText: 'Raça'),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Favor inserir algum texto';
-                }
-                return null;
-              },
-              onSaved: (newValue) => formData['race'] = newValue.toString(),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(hintText: 'Data de entrada'),
-              validator: (String? value) {
-                if (value == null || value.isEmpty) {
-                  return 'Favor inserir algum texto';
-                }
-                return null;
-              },
-              onSaved: (newValue) => formData['entry_date'] = newValue.toString(),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Data de saída prevista',
+        child: Container(
+          height: height * 0.3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(hintText: 'Responsável'),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Favor inserir algum texto';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => {formData['tutor'] = newValue!},
               ),
-              onSaved: (newValue) => formData['exit_date'] = newValue.toString(),
-            ),
-          ],
+              TextFormField(
+                decoration: const InputDecoration(hintText: 'Espécie do Pet'),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Favor inserir algum texto';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => {formData['species'] = newValue!},
+              ),
+              TextFormField(
+                decoration: const InputDecoration(hintText: 'Raça'),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Favor inserir algum texto';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => {formData['race'] = newValue!},
+              ),
+              TextFormField(
+                decoration: const InputDecoration(hintText: 'Data de entrada'),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Favor inserir algum texto';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => {formData['entry_date'] = newValue!},
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Data de saída prevista',
+                ),
+                onSaved: (newValue) => {formData['exit_date'] = newValue!},
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -98,6 +104,7 @@ class _FormModalState extends State<FormModal> {
             if (_formKey.currentState!.validate()) {
               widget.func(formData);
             }
+            Navigator.of(context).pop();
           },
           child: const Text('Enviar'),
         ),

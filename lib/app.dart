@@ -36,7 +36,7 @@ class _AppState extends State<App> {
       );
 
       element['delete_btn'] = ElevatedButton(
-        onPressed: () => {},
+        onPressed: () => {deleteItem(element['id'])},
         child: Icon(Icons.delete),
       );
     });
@@ -53,16 +53,26 @@ class _AppState extends State<App> {
     );
 
     if (response.statusCode == 200) {
-      print('deu');
     }
   }
 
   void editItem(id) {}
 
+  void deleteItem(id) async {
+    AlertDialog(title: Text('data'),);
+
+    http.Response response = await http.delete(
+      Uri.parse('http://192.168.0.121:3000/api?id=' + id.toString()),
+    );
+
+    if (response.statusCode == 200) {
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sistema de')),
+      appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
