@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -10,70 +12,51 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  List<TableRow> tables = [];
-  List<List<Widget>> _rows = [];
+  List<Map<String, dynamic>> data = [];
 
   @override
   void initState() {
-    super.initState();
     _fillTable();
-
+    super.initState();
   }
 
   Future<void> _fillTable() async {
-    final response = await http.get(Uri.parse('http://192.168.0.121:3000/api'));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> decodeJson = jsonDecode(response.body);
-      final Iterable<dynamic> ids = decodeJson
-          .map((e) => e.remove('id'))
-          .toList();
-
-
-      if (decodeJson.isNotEmpty) {
-        List<Widget> columns = [];
-        decodeJson[0].forEach((key, value) => columns.add(Text(key)));
-
-        _rows.add(columns);
-        _rows = decodeJson.map((e) {
-          List<Widget> a = [];
-          e.forEach((key, value) => a.add(Text(value.toString())));
-          return a;
-        }).toList();
-
-        for (var e in _rows) {
-          tables.add(TableRow(children: e));
-        }
-      }
-    } else {
-      throw Exception('Failed to load books');
-    }
+    http.Response response = await http.get(
+      Uri.parse('http://192.168.0.121:3000/api'),
+    );
+    final List<dynamic> decodeJson = jsonDecode(response.body);
+    setState(() {
+      data = (decodeJson).map((item) => item as Map<String, dynamic>).toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Books')),
-      body: Table(
-        border: TableBorder.all(),
-        columnWidths: const <int, TableColumnWidth>{
-          0: IntrinsicColumnWidth(),
-          1: FlexColumnWidth(),
-          2: FixedColumnWidth(64),
-        },
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        children: tables
-        // children: <TableRow>[
-        //   TableRow(
-        //     children: <Widget>[
-        //       Text('col 1'),
-        //       Text('col 2'),
-        //       Text('col 3'),
-        //       Text('col 3'),
-        //       Text('col 3'),
-        //     ],
-        //   ),
-        // ],
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          border: TableBorder.all(),
+          columns: const [
+            DataColumn(label: Text('Responsável')),
+            DataColumn(label: Text('Espécie')),
+            DataColumn(label: Text('Raça')),
+            DataColumn(label: Text('Data início')),
+            DataColumn(label: Text('Data Saída')),
+          ],
+          rows: data.map((item) {
+            return DataRow(
+              cells: [
+                DataCell(Text('${item['tutor']}')),
+                DataCell(Text('${item['species']}')),
+                DataCell(Text('${item['race']}')),
+                DataCell(Text('${item['entry_date']}')),
+                DataCell(Text('${item['exit_date']}')),
+              ],
+            );
+          }).toList(),
+        ),
       ),
       // body: ListView.builder(
       //   itemCount: _books.length,
