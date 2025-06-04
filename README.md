@@ -39,7 +39,7 @@ Este sistema permite o cadastro, edição, listagem e remoção de hóspedes (pe
    ```bash
    node app/server.js
    ```
-   - ou -
+   ou
    ```bash
    npm run dev
    ```
