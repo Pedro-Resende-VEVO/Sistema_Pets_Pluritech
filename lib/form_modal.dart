@@ -1,5 +1,6 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FormModal extends StatefulWidget {
   final String titleText;
@@ -19,17 +20,18 @@ class FormModal extends StatefulWidget {
 
 class _FormModalState extends State<FormModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> formData = {
-    'tutor': '',
-    'species': 'Cachorro',
-    'race': '',
-    'entry_date': DateTime.now().toString(),
-    'exit_date': 'Indefinido',
-  };
 
   @override
   Widget build(BuildContext context) {
     const List<String> comboList = <String>['Cachorro', 'Gato'];
+    DateFormat dateFormater = DateFormat('dd/MM/yyyy');
+    Map<String, dynamic> formData = {
+      'tutor': '',
+      'species': 'Cachorro',
+      'race': '',
+      'entry_date': dateFormater.format(DateTime.now()),
+      'exit_date': 'Indefinido',
+    };
     if (widget.data.isNotEmpty) {
       formData = widget.data;
     }
@@ -85,9 +87,9 @@ class _FormModalState extends State<FormModal> {
                 decoration: const InputDecoration(labelText: 'Data de entrada'),
                 mode: DateTimeFieldPickerMode.date,
                 canClear: false,
-                initialValue: DateTime.parse(formData['entry_date']),
+                initialValue: dateFormater.parse(formData['entry_date']),
                 onChanged: (newValue) => {
-                  formData['entry_date'] = newValue.toString(),
+                  formData['entry_date'] = dateFormater.format(newValue!),
                 },
               ),
               DateTimeFormField(
@@ -96,11 +98,12 @@ class _FormModalState extends State<FormModal> {
                 ),
                 mode: DateTimeFieldPickerMode.date,
                 initialValue: formData['exit_date'] != 'Indefinido'
-                    ? DateTime.parse(formData['exit_date'])
+                    ? dateFormater.parse(formData['exit_date'])
                     : null,
                 onChanged: (newValue) => {
                   formData['exit_date'] = newValue != null
-                      ? newValue.toString()
+                      // ? dateFormater.format(newValue)
+                      ? dateFormater.format(newValue)
                       : 'Indefinido',
                 },
               ),
