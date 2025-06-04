@@ -43,7 +43,7 @@ app.post('/api', (req, res) => {
 
         try {
             const request_data = [
-                req.body.tutor, req.body.species, req.body.race, req.body.entry_date, req.body.exit_date
+                req.query.tutor, req.query.species, req.query.race, req.query.entry_date, req.query.exit_date
             ]
             DB.run(sql, request_data, (err) => {
                 if (err) throw err;
@@ -53,7 +53,7 @@ app.post('/api', (req, res) => {
 
                     res.json({
                         'id': row.id,
-                        'message': `O cliente ${req.body.tutor} e seu ${req.body.species} foram salvos com sucesso.`
+                        'message': `O cliente ${req.query.tutor} e seu ${req.query.species} foram salvos com sucesso.`
                     });
                 });
             });

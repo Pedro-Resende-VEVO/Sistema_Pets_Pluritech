@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:teste/form_modal.dart';
+import 'package:teste/snack_info.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -22,7 +23,7 @@ class _AppState extends State<App> {
 
   Future<void> _fillTable() async {
     http.Response response = await http.get(
-      Uri.parse('http://192.168.0.121:3000/api'),
+      Uri.parse('http://192.168.18.11:3000/api'),
     );
     final List<dynamic> decodeJson = jsonDecode(response.body);
     List<Map<String, dynamic>> tempData = (decodeJson)
@@ -47,26 +48,38 @@ class _AppState extends State<App> {
   }
 
   void createItem(data) async {
+    String message = '';
     http.Response response = await http.post(
-      Uri.parse('http://192.168.0.121:3000/api'),
-      body: data,
+      Uri(
+        scheme: 'http',
+        host: '192.168.18.11',
+        port: 3000,
+        path: '/api',
+        queryParameters: data,
+      ),
     );
 
     if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      jsonResponse['id'];
+      message = jsonResponse['message'];
+    } else {
+      message =
+          'Erro na crição do item: ERRO ${response.statusCode}\n${response.body}';
     }
+    SnackInfo(context: context, title: message);
   }
 
   void editItem(id) {}
 
   void deleteItem(id) async {
-    AlertDialog(title: Text('data'),);
+    AlertDialog(title: Text('data'));
 
     http.Response response = await http.delete(
-      Uri.parse('http://192.168.0.121:3000/api?id=' + id.toString()),
+      Uri.parse('http://192.168.18.11:3000/api?id=${id.toString()}'),
     );
 
-    if (response.statusCode == 200) {
-    }
+    if (response.statusCode == 200) {}
   }
 
   @override

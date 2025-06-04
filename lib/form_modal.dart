@@ -28,17 +28,16 @@ class _FormModalState extends State<FormModal> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
 
     return AlertDialog(
       title: Text(
         widget.titleText,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
       ),
+      scrollable: true,
       content: Form(
         key: _formKey,
         child: Container(
-          height: height * 0.3,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -50,7 +49,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
-                onSaved: (newValue) => {formData['tutor'] = newValue!},
+                onChanged: (newValue) => {formData['tutor'] = newValue},
               ),
               TextFormField(
                 decoration: const InputDecoration(hintText: 'Espécie do Pet'),
@@ -60,7 +59,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
-                onSaved: (newValue) => {formData['species'] = newValue!},
+                onChanged: (newValue) => {formData['species'] = newValue},
               ),
               TextFormField(
                 decoration: const InputDecoration(hintText: 'Raça'),
@@ -70,7 +69,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
-                onSaved: (newValue) => {formData['race'] = newValue!},
+                onChanged: (newValue) => {formData['race'] = newValue},
               ),
               TextFormField(
                 decoration: const InputDecoration(hintText: 'Data de entrada'),
@@ -80,13 +79,13 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
-                onSaved: (newValue) => {formData['entry_date'] = newValue!},
+                onChanged: (newValue) => {formData['entry_date'] = newValue},
               ),
               TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'Data de saída prevista',
                 ),
-                onSaved: (newValue) => {formData['exit_date'] = newValue!},
+                onChanged: (newValue) => {formData['exit_date'] = newValue},
               ),
             ],
           ),
