@@ -1,3 +1,4 @@
+import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 
 class FormModal extends StatefulWidget {
@@ -20,14 +21,15 @@ class _FormModalState extends State<FormModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Map<String, dynamic> formData = {
     'tutor': '',
-    'species': '',
+    'species': 'Cachorro',
     'race': '',
-    'entry_date': '',
-    'exit_date': '',
+    'entry_date': DateTime.now().toString(),
+    'exit_date': 'Indefinido',
   };
 
   @override
   Widget build(BuildContext context) {
+    const List<String> comboList = <String>['Cachorro', 'Gato'];
     if (widget.data.isNotEmpty) {
       formData = widget.data;
     }
@@ -55,16 +57,18 @@ class _FormModalState extends State<FormModal> {
                 initialValue: formData['tutor'],
                 onChanged: (newValue) => {formData['tutor'] = newValue},
               ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: 'Espécie do Pet'),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Favor inserir algum texto';
-                  }
-                  return null;
+              DropdownButton(
+                value: formData['species'],
+                elevation: 16,
+                onChanged: (newValue) => {
+                  setState(() => formData['species'] = newValue),
                 },
-                initialValue: formData['species'],
-                onChanged: (newValue) => {formData['species'] = newValue},
+                items: comboList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               TextFormField(
                 decoration: const InputDecoration(hintText: 'Raça'),
@@ -77,23 +81,28 @@ class _FormModalState extends State<FormModal> {
                 initialValue: formData['race'],
                 onChanged: (newValue) => {formData['race'] = newValue},
               ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: 'Data de entrada'),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Favor inserir algum texto';
-                  }
-                  return null;
+              DateTimeFormField(
+                decoration: const InputDecoration(labelText: 'Data de entrada'),
+                mode: DateTimeFieldPickerMode.date,
+                canClear: false,
+                initialValue: DateTime.parse(formData['entry_date']),
+                onChanged: (newValue) => {
+                  formData['entry_date'] = newValue.toString(),
                 },
-                initialValue: formData['entry_date'],
-                onChanged: (newValue) => {formData['entry_date'] = newValue},
               ),
-              TextFormField(
+              DateTimeFormField(
                 decoration: const InputDecoration(
-                  hintText: 'Data de saída prevista',
+                  labelText: 'Data de saída prevista',
                 ),
-                initialValue: formData['exit_date'],
-                onChanged: (newValue) => {formData['exit_date'] = newValue},
+                mode: DateTimeFieldPickerMode.date,
+                initialValue: formData['exit_date'] != 'Indefinido'
+                    ? DateTime.parse(formData['exit_date'])
+                    : null,
+                onChanged: (newValue) => {
+                  formData['exit_date'] = newValue != null
+                      ? newValue.toString()
+                      : 'Indefinido',
+                },
               ),
             ],
           ),
