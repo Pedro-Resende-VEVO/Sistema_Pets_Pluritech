@@ -14,6 +14,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   List<Map<String, dynamic>> data = [];
+  String apiUrl = 'http://192.168.0.121:3000/api';
 
   @override
   void initState() {
@@ -22,30 +23,14 @@ class _AppState extends State<App> {
   }
 
   Future<void> _fillTable() async {
-    http.Response response = await http.get(
-      Uri.parse('http://192.168.18.11:3000/api'),
-    );
+    http.Response response = await http.get(Uri.parse(apiUrl));
     final List<dynamic> decodeJson = jsonDecode(response.body);
     List<Map<String, dynamic>> tempData = (decodeJson)
         .map((item) => item as Map<String, dynamic>)
         .toList();
 
     tempData.forEach((element) {
-      element['edit_btn'] = ElevatedButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (ctx) =>
-                FormModal(titleText: 'Editar Cliente', func: editItem, data: element,),
-          );
-        },
-        child: Icon(Icons.edit),
-      );
-
-      element['delete_btn'] = ElevatedButton(
-        onPressed: () => {deleteItem(element['id'])},
-        child: Icon(Icons.delete),
-      );
+      addBtns(element);
     });
 
     setState(() {
@@ -53,21 +38,47 @@ class _AppState extends State<App> {
     });
   }
 
-  void createItem(data) async {
+  void addBtns(Map<String, dynamic> element) {
+    element['edit_btn'] = ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => FormModal(
+            titleText: 'Editar Cliente',
+            func: editItem,
+            data: element,
+          ),
+        );
+      },
+      child: Icon(Icons.edit),
+    );
+
+    element['delete_btn'] = ElevatedButton(
+      onPressed: () => {deleteItem(element['id'])},
+      child: Icon(Icons.delete),
+    );
+  }
+
+  void createItem(Map<String, dynamic> formData) async {
     String message = '';
     http.Response response = await http.post(
       Uri(
         scheme: 'http',
-        host: '192.168.18.11',
+        host: '192.168.0.121',
         port: 3000,
         path: '/api',
-        queryParameters: data,
+        queryParameters: formData,
       ),
     );
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = json.decode(response.body);
-      jsonResponse['id'];
+      formData['id'] = jsonResponse['id'];
+      addBtns(formData);
+
+      setState(() {
+        data.add(formData);
+      });
       message = jsonResponse['message'];
     } else {
       message =
@@ -82,7 +93,7 @@ class _AppState extends State<App> {
     AlertDialog(title: Text('data'));
 
     http.Response response = await http.delete(
-      Uri.parse('http://192.168.18.11:3000/api?id=${id.toString()}'),
+      Uri.parse('$apiUrl?id=${id.toString()}'),
     );
 
     if (response.statusCode == 200) {}
@@ -91,7 +102,8 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
+      // appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
+      appBar: AppBar(title: Text('')),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-var formData =
-    {'tutor': '', 'species': '', 'race': '', 'entry_date': '', 'exit_date': ''}
-        as Map<String, dynamic>;
-
 class FormModal extends StatefulWidget {
   final String titleText;
   final Map<String, dynamic> data;
@@ -22,10 +18,17 @@ class FormModal extends StatefulWidget {
 
 class _FormModalState extends State<FormModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Map<String, dynamic> formData = {
+    'tutor': '',
+    'species': '',
+    'race': '',
+    'entry_date': '',
+    'exit_date': '',
+  };
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data != {}) {
+    if (widget.data.isNotEmpty) {
       formData = widget.data;
     }
 
