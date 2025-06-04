@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:teste/form_modal.dart';
@@ -13,6 +14,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  DateFormat dateFormater = DateFormat('dd/MM/yyyy');
   List<Map<String, dynamic>> data = [];
   String apiUrl = 'http://192.168.0.121:3000/api';
 
@@ -30,12 +32,22 @@ class _AppState extends State<App> {
         .toList();
 
     tempData.forEach((element) {
+      addHosted(element);
       addBtns(element);
     });
 
     setState(() {
       data = tempData;
     });
+  }
+
+  void addHosted(Map<String, dynamic> element) {
+    DateTime entryDate = dateFormater.parse(element['entry_date']);
+
+    element['hosted_days'] = DateTime.now().difference(entryDate).inDays;
+    element['hosted_total'] = element['exit_date'] != 'Indefinido'
+        ? dateFormater.parse(element['exit_date']).difference(entryDate).inDays
+        : 'Indefinido';
   }
 
   void addBtns(Map<String, dynamic> element) {
@@ -74,6 +86,7 @@ class _AppState extends State<App> {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = json.decode(response.body);
       formData['id'] = jsonResponse['id'];
+      addHosted(formData);
       addBtns(formData);
 
       setState(() => data.add(formData));
@@ -87,12 +100,15 @@ class _AppState extends State<App> {
 
   void editItem(Map<String, dynamic> formData) async {
     String message = '';
-
     Map<String, dynamic> tempData = Map.from(formData);
+
     tempData.remove('edit_btn');
     tempData.remove('delete_btn');
+    tempData.remove('hosted_total');
+    tempData.remove('hosted_days');
+
     tempData['id'] = tempData['id'].toString();
-    
+
     http.Response response = await http.put(
       Uri(
         scheme: 'http',
@@ -104,6 +120,7 @@ class _AppState extends State<App> {
     );
 
     if (response.statusCode == 200) {
+      addHosted(formData);
       int pos = data.indexOf(formData);
       setState(() => data[pos] = formData);
       message = response.body;
@@ -132,15 +149,6 @@ class _AppState extends State<App> {
     SnackInfo(context: context, title: message);
   }
 
-  Map<String, dynamic>? findRow(id) {
-    for (var row in data) {
-      if (row['id'] == id) {
-        return row;
-      }
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,8 +164,10 @@ class _AppState extends State<App> {
             DataColumn(label: Text('Responsável')),
             DataColumn(label: Text('Espécie')),
             DataColumn(label: Text('Raça')),
-            DataColumn(label: Text('Data início')),
-            DataColumn(label: Text('Data Saída')),
+            DataColumn(label: Text('Data Início')),
+            DataColumn(label: Text('Diária Estadia Atual')),
+            DataColumn(label: Text('Data Saída Prevista')),
+            DataColumn(label: Text('Diária Total Prevista')),
           ],
           rows: data.map((item) {
             return DataRow(
@@ -168,7 +178,9 @@ class _AppState extends State<App> {
                 DataCell(Text('${item['species']}')),
                 DataCell(Text('${item['race']}')),
                 DataCell(Text('${item['entry_date']}')),
+                DataCell(Text('${item['hosted_days']}')),
                 DataCell(Text('${item['exit_date']}')),
+                DataCell(Text('${item['hosted_total']}')),
               ],
             );
           }).toList(),
