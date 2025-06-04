@@ -2,12 +2,17 @@ import bodyParser from 'body-parser';
 import express from 'express'
 import { DB } from './connect.js';
 
+/**
+ * Servidor Express responsável pela API REST do sistema de hotel para pets.
+ */
 const app = express();
 const port = 3000
 
 app.use(bodyParser.json());
 
-//Inicia API
+/**
+ * Inicia o servidor na porta definida.
+ */
 app.listen(port, (err) => {
     if (err) {
         console.log(err.message)
@@ -16,7 +21,10 @@ app.listen(port, (err) => {
     console.log(`Server running at http://localhost:${port}`)
 })
 
-//Método GET
+/**
+ * Rota GET /api
+ * Retorna todos os registros da tabela Pets.
+ */
 app.get('/api', (req, res) => {
     const sql = 'SELECT * FROM Pets';
     try {
@@ -29,7 +37,10 @@ app.get('/api', (req, res) => {
     }
 });
 
-//Método POST
+/**
+ * Rota POST /api
+ * Insere um novo registro na tabela Pets.
+ */
 app.post('/api', (req, res) => {
     DB.serialize(() => {
         const sql = `
@@ -63,8 +74,10 @@ app.post('/api', (req, res) => {
     });
 });
 
-
-//Método PUT
+/**
+ * Rota PUT /api
+ * Atualiza um registro existente na tabela Pets.
+ */
 app.put('/api', (req, res) => {
     const sql = `
         UPDATE Pets
@@ -88,8 +101,10 @@ app.put('/api', (req, res) => {
     }
 });
 
-
-//MÉTODO DELETE
+/**
+ * Rota DELETE /api
+ * Remove um registro da tabela Pets pelo id.
+ */
 app.delete('/api', (req, res) => {
     DB.serialize(() => {
         const sql = 'DELETE FROM Pets WHERE id = ?';

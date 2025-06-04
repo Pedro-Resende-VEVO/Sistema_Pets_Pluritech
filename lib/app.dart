@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:teste/form_modal.dart';
 import 'package:teste/snack_info.dart';
 
+/// Widget principal do aplicativo, responsável por exibir e gerenciar a tabela de hóspedes.
 class App extends StatefulWidget {
   const App({super.key});
 
@@ -13,9 +14,15 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
+/// Estado do widget [App], gerencia dados, comunicação com API e interface.
 class _AppState extends State<App> {
+  /// Formato de data utilizado no app.
   DateFormat dateFormater = DateFormat('dd/MM/yyyy');
+
+  /// Lista de dados exibidos na tabela.
   List<Map<String, dynamic>> data = [];
+
+  /// Lista de colunas da tabela.
   List<String> columnsList = [
     'Remover',
     'Editar',
@@ -27,6 +34,8 @@ class _AppState extends State<App> {
     'Data Saída Prevista',
     'Diária Total Prevista',
   ];
+
+  /// Endereço do host da API.
   String apiHost = '192.168.0.121';
 
   @override
@@ -35,6 +44,7 @@ class _AppState extends State<App> {
     super.initState();
   }
 
+  /// Preenche a tabela buscando dados da API.
   Future<void> _fillTable() async {
     http.Response response = await http.get(
       Uri(scheme: 'http', host: apiHost, port: 3000, path: '/api'),
@@ -54,6 +64,7 @@ class _AppState extends State<App> {
     });
   }
 
+  /// Adiciona informações de hospedagem (dias hospedados e total previsto) ao elemento.
   void addHosted(Map<String, dynamic> element) {
     DateTime entryDate = dateFormater.parse(element['entry_date']);
 
@@ -63,6 +74,7 @@ class _AppState extends State<App> {
         : 'Indefinido';
   }
 
+  /// Adiciona botões de editar e remover ao elemento.
   void addBtns(Map<String, dynamic> element) {
     element['edit_btn'] = ElevatedButton(
       onPressed: () {
@@ -84,6 +96,7 @@ class _AppState extends State<App> {
     );
   }
 
+  /// Cria um novo item na base de dados via API.
   void createItem(Map<String, dynamic> formData) async {
     String message = '';
     http.Response response = await http.post(
@@ -111,6 +124,7 @@ class _AppState extends State<App> {
     SnackInfo(context: context, title: message);
   }
 
+  /// Edita um item existente na base de dados via API.
   void editItem(Map<String, dynamic> formData) async {
     String message = '';
     Map<String, dynamic> tempData = Map.from(formData);
@@ -144,6 +158,7 @@ class _AppState extends State<App> {
     SnackInfo(context: context, title: message);
   }
 
+  /// Remove um item da base de dados via API.
   void deleteItem(Map<String, dynamic> elementData) async {
     String message = '';
     int id = elementData['id'];
@@ -156,7 +171,6 @@ class _AppState extends State<App> {
         path: '/api',
         query: 'id=${id.toString()}',
       ),
-      // Uri.parse('$apiUrl?id=${id.toString()}'),
     );
 
     if (response.statusCode == 200) {
@@ -208,7 +222,6 @@ class _AppState extends State<App> {
                 FormModal(titleText: 'Adcionar Cliente', func: createItem),
           );
         },
-        tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), //
     );

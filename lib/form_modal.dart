@@ -2,9 +2,15 @@ import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// Modal de formulário para adicionar ou editar hóspedes.
 class FormModal extends StatefulWidget {
+  /// Título do modal.
   final String titleText;
+
+  /// Dados do hóspede (opcional, usado para edição).
   final Map<String, dynamic> data;
+
+  /// Função a ser chamada ao enviar o formulário.
   final Function func;
 
   const FormModal({
@@ -18,7 +24,9 @@ class FormModal extends StatefulWidget {
   State<StatefulWidget> createState() => _FormModalState();
 }
 
+/// Estado do modal de formulário.
 class _FormModalState extends State<FormModal> {
+  /// Chave global para validação do formulário.
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
