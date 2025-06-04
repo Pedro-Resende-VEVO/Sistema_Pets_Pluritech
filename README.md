@@ -38,7 +38,9 @@ Este sistema permite o cadastro, edição, listagem e remoção de hóspedes (pe
 3. Inicie o servidor:
    ```bash
    node app/server.js
+   ```
    - ou -
+   ```bash
    npm run dev
    ```
    O servidor estará disponível em `http://localhost:3000/api`.
