@@ -32,7 +32,13 @@ class _AppState extends State<App> {
 
     tempData.forEach((element) {
       element['edit_btn'] = ElevatedButton(
-        onPressed: () => {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (ctx) =>
+                FormModal(titleText: 'Editar Cliente', func: editItem, data: element,),
+          );
+        },
         child: Icon(Icons.edit),
       );
 

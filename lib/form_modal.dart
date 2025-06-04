@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 
-var formData = {
-  'tutor': '',
-  'species': '',
-  'race': '',
-  'entry_date': '',
-  'exit_date': '',
-};
+var formData =
+    {'tutor': '', 'species': '', 'race': '', 'entry_date': '', 'exit_date': ''}
+        as Map<String, dynamic>;
 
 class FormModal extends StatefulWidget {
   final String titleText;
+  final Map<String, dynamic> data;
   final Function func;
 
   const FormModal({
     Key? key,
     required this.titleText,
     required this.func,
-    Map<String, dynamic>? data,
+    this.data = const {},
   }) : super(key: key);
 
   @override
@@ -28,6 +25,9 @@ class _FormModalState extends State<FormModal> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.data != {}) {
+      formData = widget.data;
+    }
 
     return AlertDialog(
       title: Text(
@@ -49,6 +49,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
+                initialValue: formData['tutor'],
                 onChanged: (newValue) => {formData['tutor'] = newValue},
               ),
               TextFormField(
@@ -59,6 +60,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
+                initialValue: formData['species'],
                 onChanged: (newValue) => {formData['species'] = newValue},
               ),
               TextFormField(
@@ -69,6 +71,7 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
+                initialValue: formData['race'],
                 onChanged: (newValue) => {formData['race'] = newValue},
               ),
               TextFormField(
@@ -79,12 +82,14 @@ class _FormModalState extends State<FormModal> {
                   }
                   return null;
                 },
+                initialValue: formData['entry_date'],
                 onChanged: (newValue) => {formData['entry_date'] = newValue},
               ),
               TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'Data de saída prevista',
                 ),
+                initialValue: formData['exit_date'],
                 onChanged: (newValue) => {formData['exit_date'] = newValue},
               ),
             ],
