@@ -122,8 +122,8 @@ class _FormModalState extends State<FormModal> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               widget.func(formData);
+              Navigator.of(context).pop();
             }
-            Navigator.of(context).pop();
           },
           child: const Text('Enviar'),
         ),

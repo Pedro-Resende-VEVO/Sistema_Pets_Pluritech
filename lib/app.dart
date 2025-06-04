@@ -16,7 +16,18 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   DateFormat dateFormater = DateFormat('dd/MM/yyyy');
   List<Map<String, dynamic>> data = [];
-  String apiUrl = 'http://192.168.0.121:3000/api';
+  List<String> columnsList = [
+    'Remover',
+    'Editar',
+    'Responsável',
+    'Espécie',
+    'Raça',
+    'Data Início',
+    'Diária Estadia Atual',
+    'Data Saída Prevista',
+    'Diária Total Prevista',
+  ];
+  String apiHost = '192.168.0.121';
 
   @override
   void initState() {
@@ -25,7 +36,9 @@ class _AppState extends State<App> {
   }
 
   Future<void> _fillTable() async {
-    http.Response response = await http.get(Uri.parse(apiUrl));
+    http.Response response = await http.get(
+      Uri(scheme: 'http', host: apiHost, port: 3000, path: '/api'),
+    );
     final List<dynamic> decodeJson = jsonDecode(response.body);
     List<Map<String, dynamic>> tempData = (decodeJson)
         .map((item) => item as Map<String, dynamic>)
@@ -76,7 +89,7 @@ class _AppState extends State<App> {
     http.Response response = await http.post(
       Uri(
         scheme: 'http',
-        host: '192.168.0.121',
+        host: apiHost,
         port: 3000,
         path: '/api',
         queryParameters: formData,
@@ -112,7 +125,7 @@ class _AppState extends State<App> {
     http.Response response = await http.put(
       Uri(
         scheme: 'http',
-        host: '192.168.0.121',
+        host: apiHost,
         port: 3000,
         path: '/api',
         queryParameters: tempData,
@@ -136,7 +149,14 @@ class _AppState extends State<App> {
     int id = elementData['id'];
 
     http.Response response = await http.delete(
-      Uri.parse('$apiUrl?id=${id.toString()}'),
+      Uri(
+        scheme: 'http',
+        host: apiHost,
+        port: 3000,
+        path: '/api',
+        query: 'id=${id.toString()}',
+      ),
+      // Uri.parse('$apiUrl?id=${id.toString()}'),
     );
 
     if (response.statusCode == 200) {
@@ -152,23 +172,17 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
-      appBar: AppBar(title: Text('')),
+      appBar: AppBar(title: Text('Hotel Pet - PluriTech')),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
           border: TableBorder.all(),
-          columns: const [
-            DataColumn(label: Text('')),
-            DataColumn(label: Text('')),
-            DataColumn(label: Text('Responsável')),
-            DataColumn(label: Text('Espécie')),
-            DataColumn(label: Text('Raça')),
-            DataColumn(label: Text('Data Início')),
-            DataColumn(label: Text('Diária Estadia Atual')),
-            DataColumn(label: Text('Data Saída Prevista')),
-            DataColumn(label: Text('Diária Total Prevista')),
-          ],
+          columns: columnsList.map((e) {
+            return DataColumn(
+              label: Text(e),
+              headingRowAlignment: MainAxisAlignment.center,
+            );
+          }).toList(),
           rows: data.map((item) {
             return DataRow(
               cells: [
