@@ -74,13 +74,13 @@ app.put('/api', (req, res) => {
 
     try {
         const request_data = [
-            req.body.tutor, req.body.species, req.body.race, req.body.entry_date, req.body.exit_date, req.query.id,
+            req.query.tutor, req.query.species, req.query.race, req.query.entry_date, req.query.exit_date, req.query.id,
         ]
         DB.run(sql, request_data, (err) => {
             if (err) throw err;
 
             res.send(
-                `Os dados de ${req.body.tutor}, dono de ${req.body.species}, foram atualizados`
+                `Os dados de ${req.query.tutor}, dono de ${req.query.species}, foram atualizados`
             );
         });
     } catch (err) {

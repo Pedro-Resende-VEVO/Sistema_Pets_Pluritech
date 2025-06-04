@@ -54,7 +54,7 @@ class _AppState extends State<App> {
     );
 
     element['delete_btn'] = ElevatedButton(
-      onPressed: () => {deleteItem(element['id'])},
+      onPressed: () => {deleteItem(element)},
       child: Icon(Icons.delete),
     );
   }
@@ -76,9 +76,7 @@ class _AppState extends State<App> {
       formData['id'] = jsonResponse['id'];
       addBtns(formData);
 
-      setState(() {
-        data.add(formData);
-      });
+      setState(() => data.add(formData));
       message = jsonResponse['message'];
     } else {
       message =
@@ -87,16 +85,60 @@ class _AppState extends State<App> {
     SnackInfo(context: context, title: message);
   }
 
-  void editItem(id) {}
+  void editItem(Map<String, dynamic> formData) async {
+    String message = '';
 
-  void deleteItem(id) async {
-    AlertDialog(title: Text('data'));
+    Map<String, dynamic> tempData = Map.from(formData);
+    tempData.remove('edit_btn');
+    tempData.remove('delete_btn');
+    tempData['id'] = tempData['id'].toString();
+    
+    http.Response response = await http.put(
+      Uri(
+        scheme: 'http',
+        host: '192.168.0.121',
+        port: 3000,
+        path: '/api',
+        queryParameters: tempData,
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      int pos = data.indexOf(formData);
+      setState(() => data[pos] = formData);
+      message = response.body;
+    } else {
+      message =
+          'Erro na remoção do item: ERRO ${response.statusCode}\n${response.body}';
+    }
+    SnackInfo(context: context, title: message);
+  }
+
+  void deleteItem(Map<String, dynamic> elementData) async {
+    String message = '';
+    int id = elementData['id'];
 
     http.Response response = await http.delete(
       Uri.parse('$apiUrl?id=${id.toString()}'),
     );
 
-    if (response.statusCode == 200) {}
+    if (response.statusCode == 200) {
+      setState(() => data.remove(elementData));
+      message = response.body;
+    } else {
+      message =
+          'Erro na remoção do item: ERRO ${response.statusCode}\n${response.body}';
+    }
+    SnackInfo(context: context, title: message);
+  }
+
+  Map<String, dynamic>? findRow(id) {
+    for (var row in data) {
+      if (row['id'] == id) {
+        return row;
+      }
+    }
+    return null;
   }
 
   @override
